@@ -1,0 +1,144 @@
+/* === list.css (replace whole file) === */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #fafafa;
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.all {
+    border-style: solid;
+    border-color: rgb(120, 202, 205);
+    padding: 20px;
+    width: 420px;
+    text-align: center;
+    background-color: white;
+    border-radius: 10px;
+}
+
+input {
+    padding: 10px;
+    width: 65%;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid gray;
+    outline: none;
+}
+
+button {
+    padding: 10px 15px;
+    font-size: 16px;
+    margin-left: 8px;
+    background-color: rgb(71, 118, 236);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+/* --- List styles --- */
+ul {
+    margin-top: 20px;
+    padding-left: 18px;
+    /* keep some left space */
+    text-align: left;
+}
+
+/* Make li a flex row with left "bullet" created by ::before */
+li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    /* space between bullet/text and the button */
+    font-size: 18px;
+    margin: 10px 0;
+    list-style: none;
+    /* hide default marker */
+    position: relative;
+    /* smooth transitions for color & decoration */
+    transition: color 0.35s ease;
+}
+
+/* custom bullet */
+li::before {
+    content: "•";
+    font-size: 20px;
+    line-height: 1;
+    color: black;
+    margin-right: 6px;
+    /* keep bullet left aligned */
+    width: 18px;
+    text-align: left;
+    display: inline-block;
+}
+
+/* ensure text spans take remaining space so button stays right */
+li span {
+    flex: 1 1 auto;
+    display: inline-block;
+    word-break: break-word;
+    transition: color 0.35s ease, text-decoration-color 0.35s ease;
+}
+
+/* Done button inside the list */
+.doneBtn {
+    background-color: rgb(87, 180, 99);
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.12s;
+}
+
+.doneBtn:hover {
+    opacity: 0.85;
+    transform: translateY(-1px);
+}
+
+/* When item is marked done */
+li.done span {
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+    text-decoration-color: rgba(0, 0, 0, 0.35);
+    /* subtle line color */
+    color: gray;
+}
+
+/* make the bullet also turn gray when done */
+li.done::before {
+    color: gray;
+}
+
+/* Optional: smaller spacing on small screens */
+@media (max-width: 480px) {
+    .all {
+        width: 94%;
+        padding: 16px;
+    }
+
+    input {
+        width: 60%;
+    }
+
+    li::before {
+        width: 14px;
+        font-size: 18px;
+    }
+}
+
+/* --- Drag & Drop styles --- */
+li.dragging {
+    opacity: 0.5;
+    transform: scale(0.98);
+}
+
+li.dragging::before {
+    color: lightgray;
+}

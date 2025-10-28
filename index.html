@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>List of Today</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <div class="all">
+        <h1>List of Today</h1>
+        <p>Say what you have to do today</p>
+
+        <input placeholder="Type in action" type="text" id="taskInput">
+        <button id="addBtn">Add</button>
+
+        <ul id="taskList"></ul>
+    </div>
+
+    <script>
+        const addBtn = document.getElementById('addBtn');
+        const taskInput = document.getElementById('taskInput');
+        const taskList = document.getElementById('taskList');
+
+        addBtn.addEventListener('click', addTask);
+        taskInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addTask();
+        });
+
+        function addTask() {
+            const taskText = taskInput.value.trim();
+            if (taskText === '') return;
+
+            const li = document.createElement('li');
+            li.draggable = true; // enable drag
+
+            const textSpan = document.createElement('span');
+            textSpan.textContent = taskText;
+
+            const doneBtn = document.createElement('button');
+            doneBtn.textContent = 'Done';
+            doneBtn.classList.add('doneBtn');
+
+            doneBtn.addEventListener('click', () => {
+                li.classList.toggle('done');
+            });
+
+            li.appendChild(textSpan);
+            li.appendChild(doneBtn);
+
+            // add drag behavior
+            addDragEvents(li);
+
+            taskList.appendChild(li);
+            taskInput.value = '';
+        }
+
+        function addDragEvents(li) {
+            li.addEventListener('dragstart', () => {
+                li.classList.add('dragging');
+            });
+
+            li.addEventListener('dragend', () => {
+                li.classList.remove('dragging');
+            });
+        }
+
+        // Handle dragging over list
+        taskList.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const dragging = document.querySelector('.dragging');
+            const afterElement = getDragAfterElement(taskList, e.clientY);
+            if (afterElement == null) {
+                taskList.appendChild(dragging);
+            } else {
+                taskList.insertBefore(dragging, afterElement);
+            }
+        });
+
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('li:not(.dragging)')];
+
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+    </script>
+</body>
+
+</html>
