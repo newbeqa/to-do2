@@ -38,16 +38,25 @@
             const textSpan = document.createElement('span');
             textSpan.textContent = taskText;
 
+            // Done button
             const doneBtn = document.createElement('button');
             doneBtn.textContent = 'Done';
             doneBtn.classList.add('doneBtn');
-
             doneBtn.addEventListener('click', () => {
                 li.classList.toggle('done');
             });
 
+            // Delete button
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = '✖';
+            deleteBtn.classList.add('deleteBtn');
+            deleteBtn.addEventListener('click', () => {
+                li.remove();
+            });
+
             li.appendChild(textSpan);
             li.appendChild(doneBtn);
+            li.appendChild(deleteBtn);
 
             // add drag behavior
             addDragEvents(li);
