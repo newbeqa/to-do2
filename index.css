@@ -1,20 +1,22 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #fafafa;
+    background-color: #f0f0f0; /* softer page background */
     display: flex;
     justify-content: center;
     margin-top: 40px;
 }
 
 .all {
+    background-color: #f8f9fa; /* soft off-white for container */
     border-style: solid;
     border-color: rgb(120, 202, 205);
     padding: 20px;
     width: 420px;
     text-align: center;
-    background-color: white;
     border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
+
 
 input {
     padding: 10px;
@@ -146,3 +148,4 @@ li.dragging {
 li.dragging::before {
     color: lightgray;
 }
+
