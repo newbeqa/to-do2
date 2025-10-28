@@ -20,87 +20,103 @@
 
     <script>
         const addBtn = document.getElementById('addBtn');
-        const taskInput = document.getElementById('taskInput');
-        const taskList = document.getElementById('taskList');
+const taskInput = document.getElementById('taskInput');
+const taskList = document.getElementById('taskList');
 
-        addBtn.addEventListener('click', addTask);
-        taskInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') addTask();
+// Load tasks from localStorage
+document.addEventListener('DOMContentLoaded', loadTasks);
+
+addBtn.addEventListener('click', addTask);
+taskInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') addTask();
+});
+
+function addTask() {
+    const taskText = taskInput.value.trim();
+    if (taskText === '') return;
+
+    const taskObj = { text: taskText, done: false };
+    createTaskElement(taskObj);
+    saveTasks();
+
+    taskInput.value = '';
+}
+
+function createTaskElement(taskObj) {
+    const li = document.createElement('li');
+    li.draggable = true;
+
+    const textSpan = document.createElement('span');
+    textSpan.textContent = taskObj.text;
+
+    if (taskObj.done) li.classList.add('done');
+
+    const doneBtn = document.createElement('button');
+    doneBtn.textContent = 'Done';
+    doneBtn.classList.add('doneBtn');
+    doneBtn.addEventListener('click', () => {
+        li.classList.toggle('done');
+        saveTasks();
+    });
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = '✖';
+    deleteBtn.classList.add('deleteBtn');
+    deleteBtn.addEventListener('click', () => {
+        li.remove();
+        saveTasks();
+    });
+
+    li.appendChild(textSpan);
+    li.appendChild(doneBtn);
+    li.appendChild(deleteBtn);
+
+    addDragEvents(li);
+    taskList.appendChild(li);
+}
+
+function saveTasks() {
+    const tasks = [];
+    taskList.querySelectorAll('li').forEach(li => {
+        tasks.push({
+            text: li.querySelector('span').textContent,
+            done: li.classList.contains('done')
         });
+    });
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+}
 
-        function addTask() {
-            const taskText = taskInput.value.trim();
-            if (taskText === '') return;
+function loadTasks() {
+    const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    tasks.forEach(taskObj => createTaskElement(taskObj));
+}
 
-            const li = document.createElement('li');
-            li.draggable = true; // enable drag
+// Drag & Drop (same as before)
+function addDragEvents(li) {
+    li.addEventListener('dragstart', () => li.classList.add('dragging'));
+    li.addEventListener('dragend', () => li.classList.remove('dragging'));
+}
 
-            const textSpan = document.createElement('span');
-            textSpan.textContent = taskText;
+taskList.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    const dragging = document.querySelector('.dragging');
+    const afterElement = getDragAfterElement(taskList, e.clientY);
+    if (afterElement == null) taskList.appendChild(dragging);
+    else taskList.insertBefore(dragging, afterElement);
+});
 
-            // Done button
-            const doneBtn = document.createElement('button');
-            doneBtn.textContent = 'Done';
-            doneBtn.classList.add('doneBtn');
-            doneBtn.addEventListener('click', () => {
-                li.classList.toggle('done');
-            });
+function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('li:not(.dragging)')];
+    return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) return { offset, element: child };
+        else return closest;
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
 
-            // Delete button
-            const deleteBtn = document.createElement('button');
-            deleteBtn.textContent = '✖';
-            deleteBtn.classList.add('deleteBtn');
-            deleteBtn.addEventListener('click', () => {
-                li.remove();
-            });
-
-            li.appendChild(textSpan);
-            li.appendChild(doneBtn);
-            li.appendChild(deleteBtn);
-
-            // add drag behavior
-            addDragEvents(li);
-
-            taskList.appendChild(li);
-            taskInput.value = '';
-        }
-
-        function addDragEvents(li) {
-            li.addEventListener('dragstart', () => {
-                li.classList.add('dragging');
-            });
-
-            li.addEventListener('dragend', () => {
-                li.classList.remove('dragging');
-            });
-        }
-
-        // Handle dragging over list
-        taskList.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            const dragging = document.querySelector('.dragging');
-            const afterElement = getDragAfterElement(taskList, e.clientY);
-            if (afterElement == null) {
-                taskList.appendChild(dragging);
-            } else {
-                taskList.insertBefore(dragging, afterElement);
-            }
-        });
-
-        function getDragAfterElement(container, y) {
-            const draggableElements = [...container.querySelectorAll('li:not(.dragging)')];
-
-            return draggableElements.reduce((closest, child) => {
-                const box = child.getBoundingClientRect();
-                const offset = y - box.top - box.height / 2;
-                if (offset < 0 && offset > closest.offset) {
-                    return { offset: offset, element: child };
-                } else {
-                    return closest;
-                }
-            }, { offset: Number.NEGATIVE_INFINITY }).element;
-        }
     </script>
 </body>
 
 </html>
+
